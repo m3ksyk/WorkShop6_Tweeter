@@ -25,6 +25,9 @@ public class User {
     @NotNull
     private String password;
 
+    @NotNull
+    private  String cSalt = BCrypt.gensalt();
+
     @Email
     @NotNull
     @Column(unique = true)
@@ -65,7 +68,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+        this.password = BCrypt.hashpw(password, cSalt);
     }
 
     public boolean isEnabled() {
@@ -106,5 +109,13 @@ public class User {
 
     public void setReceivedMessages(List<Message> receivedMessages) {
         this.receivedMessages = receivedMessages;
+    }
+
+    public String getcSalt() {
+        return cSalt;
+    }
+
+    public void setcSalt(String cSalt) {
+        this.cSalt = cSalt;
     }
 }

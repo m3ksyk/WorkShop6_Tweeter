@@ -10,4 +10,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("Select t from Tweet t Join t.user u Where u.id = :id")
     List<Tweet> findAllByUser(Long id);
 
+    User findByPassword(String password);
+    User findByEmail(String email);
+
+
 }

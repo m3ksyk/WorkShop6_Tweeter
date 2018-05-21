@@ -5,10 +5,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import pl.coderslab.app.BCrypt;
 import pl.coderslab.entity.User;
 import pl.coderslab.repository.TweetRepository;
 import pl.coderslab.repository.UserRepository;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.awt.print.Book;
 
@@ -21,36 +23,33 @@ public class HomeController {
     @Autowired
     TweetRepository tweetRepository;
 
-    @GetMapping("/")
-    public String viewHomePageWithTweets(@Valid @ModelAttribute User user, BindingResult result, Model model){
-        if(result.hasErrors() || user == null){
+    @RequestMapping("/")
+    public String viewHomePageWithTweets(HttpSession httpSession, Model model){
+        User user = (User) httpSession.getAttribute("currentUser");
+        if(user == null){
             return "redirect:/loginPage";
         }
         model.addAttribute("tweets", tweetRepository.findAll());
+
         return "index";
     }
 
-    @GetMapping("/user/{id}/tweets")
-    public String showUserTweets(@PathVariable Long id, Model model){
-        model.addAttribute("tweets", userRepository.findAllByUser(id));
-
-        return "userTweets";
-    }
-
-    @GetMapping("/loginPage")
-    public String userLogin(Model model){
-        model.addAttribute("user", new User());
-        return "loginPage";
-    }
-
     @PostMapping("/loginPage")
-    public String saveForm(@Valid @ModelAttribute User user, BindingResult result){
-        if(result.hasErrors()){
+    public String UserLogin(Model model, HttpSession httpSession, @RequestParam String email, @RequestParam String password){
+        User user = userRepository.findByEmail(email);
+        String checkPass = BCrypt.hashpw(password, user.getcSalt());
+
+        if(checkPass.equals(user.getPassword())){
+            httpSession.setAttribute("userName", user.getUserName());
+            httpSession.setAttribute("User", user);
+            httpSession.setAttribute("UserId", user.getId());
+            model.addAttribute("LoggedUser", user);
+            return "index";
+        } else {
             return "loginPage";
         }
 
-        //add user to sess!! or pass it somehow
-        return "redirect:/";
     }
+
 
 }

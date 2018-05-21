@@ -29,9 +29,10 @@
 
 add new comment for this tweet:
 
-        //podac reszte parametrow?
         <form:form method="post" modelAttribute="comment">
             <form:errors path="*"/>
+            <form:hidden path="tweet" value="${tweet}"/>
+            <form:hidden path="user" value="${user}"/>
             <form:textarea path="text" placeholder="text"/>
 
             <input type="submit" value="post comment">
