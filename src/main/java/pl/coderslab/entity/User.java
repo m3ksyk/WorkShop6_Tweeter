@@ -2,6 +2,7 @@ package pl.coderslab.entity;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.pl.PESEL;
+import pl.coderslab.app.BCrypt;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -22,7 +23,7 @@ public class User {
     private String userName;
 
     @NotNull
-    private String password; //hash the pw!! bcrypt jest, zaimplementowac
+    private String password;
 
     @Email
     @NotNull
@@ -64,7 +65,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
     public boolean isEnabled() {
